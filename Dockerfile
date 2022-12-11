@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 WORKDIR /code
 COPY requirements.txt /code/
-RUN apk add --update --no-cache postgresql-client
+RUN apk add --update --no-cache postgresql-client bash make
 
 RUN apk add --update --no-cache --virtual .tmp-build-deps \
 	gcc libc-dev linux-headers postgresql-dev
