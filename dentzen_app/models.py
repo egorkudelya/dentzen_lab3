@@ -1,6 +1,7 @@
 from django.utils.timezone import now
 from django.db import models
 
+
 class Dentist(models.Model):
     name = models.CharField(max_length=100)
     location = models.TextField(max_length=255, blank=True, null=True)
