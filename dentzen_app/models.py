@@ -8,6 +8,9 @@ class Dentist(models.Model):
     specialty = models.TextField(max_length=255, blank=True, null=True)
     age = models.IntegerField(default=0)
 
+    class Meta:
+        db_table = 'dentists'
+
 
 class DentalClinic(models.Model):
     name = models.CharField(max_length=100)
