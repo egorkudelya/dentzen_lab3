@@ -20,4 +20,6 @@ from dentzen_app import views
 
 urlpatterns = [
     path("dentists/", views.DentistView.as_view()),
+    path("dentists/<int:id>/", views.DentistView.as_view()),
+
 ]

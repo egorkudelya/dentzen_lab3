@@ -2,16 +2,19 @@ from . import models
 from . import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from django.http import HttpResponse
 
 
 class DentistView(APIView):
 
-    def get(self, request):
-        dentists = models.Dentist.objects.raw('SELECT * FROM dentists')
+    def get(self, request, **kwargs):
+        query = 'SELECT * FROM dentists'
+        if 'id' in kwargs:
+            query += ' WHERE id=(%s)' % kwargs['id']
+
+        dentists = models.Dentist.objects.raw(query)
         serialized_dentists = serializers.DentistSerializer(dentists, many=True)
         return Response(serialized_dentists.data)
+
 
     def post(self, request):
         columns = ', '.join(request.data.keys())
