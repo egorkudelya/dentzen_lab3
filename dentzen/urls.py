@@ -14,12 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.urls import include, path
+from django.urls import path
 from dentzen_app import views
 
 
 urlpatterns = [
-    path("dentists/", views.DentistView.as_view()),
-    path("dentists/<int:id>/", views.DentistView.as_view()),
-
+    path("dentists/<int:id>/", views.DentistShowView.as_view()),
+    path("dentists/", views.DentistIndexView.as_view()),
+    path("clinics/<int:id>/", views.ClinicShowView.as_view()),
+    path("clinics/", views.ClinicIndexView.as_view()),
+    path("dentist_contracts/<int:id>/", views.DentistClinicContractShowView.as_view()),
+    path("dentist_contracts/", views.DentistClinicContractIndexView.as_view()),
 ]

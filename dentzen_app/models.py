@@ -19,7 +19,10 @@ class DentalClinic(models.Model):
     location = models.TextField(max_length=255, blank=True, null=True)
     opens = models.TimeField(default='8:00:00')
     closes = models.TimeField(default='20:00:00')
-    dentists = models.ManyToManyField(Dentist, through = "DentistClinicContract")
+    dentists = models.ManyToManyField(Dentist, through="DentistClinicContract")
+
+    class Meta:
+        db_table = 'clinics'
 
 
 class DentistClinicContract(models.Model):
@@ -27,6 +30,10 @@ class DentistClinicContract(models.Model):
     date = models.DateField(default=now)
     clinic = models.ForeignKey(DentalClinic, on_delete=models.CASCADE)
     dentist = models.ForeignKey(Dentist, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['clinic', 'dentist']
+        db_table = 'dentist_clinic_contracts'
 
 
 class Supplier(models.Model):
