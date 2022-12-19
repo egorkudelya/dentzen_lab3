@@ -48,18 +48,24 @@ class SupplierClinicContract(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
 
 
-class Drug(models.Model):
+class BaseSupplierProduct(models.Model):
     name = models.CharField(max_length=100)
     expiration_date = models.DateField(blank=True)
     description = models.TextField(max_length=255, blank=True, null=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
 
+    class Meta:
+        abstract = True
 
-class Instrument(models.Model):
-    name = models.CharField(max_length=100)
-    expiration_date = models.DateField(blank=True)
-    description = models.TextField(max_length=255, blank=True, null=True)
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+
+class Drug(BaseSupplierProduct):
+    volume = models.FloatField(default=0.0)
+    age_restriction = models.IntegerField(default=0)
+
+
+class Instrument(BaseSupplierProduct):
+    weight = models.FloatField(default=0.0)
+    is_reusable = models.BooleanField(default=False)
 
 
 class Disease(models.Model):
