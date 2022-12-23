@@ -19,7 +19,6 @@ class DentalClinic(models.Model):
     location = models.TextField(max_length=255, blank=True, null=True)
     opens = models.TimeField(default='8:00:00')
     closes = models.TimeField(default='20:00:00')
-    dentists = models.ManyToManyField(Dentist, through="DentistClinicContract")
 
     class Meta:
         db_table = 'clinics'
