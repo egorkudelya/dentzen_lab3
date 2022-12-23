@@ -52,16 +52,13 @@ class QueryBuilder:
     return self
 
   def join(self, table_name, query, join_type=''):
-    self.join_data.append({ table_name: table_name, join_type: join_type, query: query })
+    self.join_data.append({ 'table_name': table_name, 'join_type': join_type, 'query': query })
     return self
 
   def sql(self):
     join_block = ' '.join(
-      map(
-        lambda join_statement:
-          f"{join_statement.join_type} JOIN {join_statement.table_name} ON {join_statement.query}",
-        self.join_data
-      )
+        f"{join_statement['join_type']} JOIN {join_statement['table_name']} ON {join_statement['query']}"
+        for join_statement in self.join_data
     )
 
     return (
