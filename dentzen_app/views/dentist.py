@@ -61,7 +61,7 @@ class DentistAppointmentView(APIView):
 
   def get(self, request, **kwargs):
     with connection.cursor() as cursor:
-      cursor.execute(f'''select json_agg(appointments) from ({
+      cursor.execute(f'''select COALESCE(json_agg(appointments), '[]'::json) from ({
         self.appointment_repository
           .query('a')
           .where(f'a.dentist_id = {kwargs["dentist_id"]}')

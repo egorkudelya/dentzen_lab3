@@ -22,6 +22,17 @@ urlpatterns = [
     path('clinics/', views.ClinicIndexView.as_view()),
     path('clinics/<int:id>/', views.ClinicShowView.as_view()),
     path('clinics/<int:clinic_id>/dentists/', views.ClinicDentistsView.as_view()),
+    path('clinics/<int:clinic_id>/suppliers/', views.ClinicSuppliersView.as_view()),
+
+    path('supplier-contracts/', views.SupplierClinicContractIndexView.as_view()),
+    path('supplier-contracts/<int:id>/', views.SupplierClinicContractShowView.as_view()),
+
+    path('suppliers/', views.SupplierIndexView.as_view()),
+    path('suppliers/<int:id>/', views.SupplierShowView.as_view()),
+    path('suppliers/<int:supplier_id>/products/', views.SupplierProductsIndexView.as_view()),
+    path('suppliers/<int:supplier_id>/products/<str:type>', views.SupplierProductsIndexView.as_view()),
+    path('suppliers/<int:supplier_id>/products/<int:id>/', views.SupplierProductsIndexView.as_view()),
+    path('suppliers/<int:supplier_id>/products/<int:id>/<str:type>/', views.SupplierProductsIndexView.as_view()),
 
     path('dentist-contracts/', views.DentistClinicContractIndexView.as_view()),
     path('dentist-contracts/<int:id>/', views.DentistClinicContractShowView.as_view()),

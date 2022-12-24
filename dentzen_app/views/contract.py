@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..models import DentistClinicContract
+from ..models import DentistClinicContract, SupplierClinicContract
 from ..orm import PGRepository
 
 class DentistClinicContractShowView(APIView):
@@ -59,7 +59,7 @@ class DentistClinicContractIndexView(APIView):
 
   def get(self, request):
     with connection.cursor() as cursor:
-      cursor.execute(f'''select json_agg(contracts) from ({
+      cursor.execute(f'''select COALESCE(json_agg(contracts), '[]'::json) from ({
         self.contract_repository
           .query('dcc')
           .join('dentists as d', 'd.id = dcc.dentist_id')
@@ -75,6 +75,34 @@ class DentistClinicContractIndexView(APIView):
       }) contracts''')
 
       return Response(cursor.fetchone()[0], status=status.HTTP_200_OK)
+
+  def post(self, request):
+    return (
+      Response(
+        self.contract_repository.create(request.data),
+        status=status.HTTP_201_CREATED,
+      )
+    )
+
+class SupplierClinicContractShowView(APIView):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.contract_repository = PGRepository(SupplierClinicContract)
+
+  def delete(self, request, **kwargs):
+    return (
+      Response(
+        { "message": f"Contract with id {kwargs['id']} has been deleted" },
+        status=status.HTTP_200_OK
+      )
+      if self.contract_repository.delete(kwargs["id"])
+      else Response(status=status.HTTP_404_NOT_FOUND)
+    )
+
+class SupplierClinicContractIndexView(APIView):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.contract_repository = PGRepository(SupplierClinicContract)
 
   def post(self, request):
     return (

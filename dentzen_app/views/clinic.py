@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..models import DentalClinic, DentistClinicContract
+from ..models import DentalClinic, DentistClinicContract, SupplierClinicContract, Supplier
 from ..orm import PGRepository
 
 class ClinicShowView(APIView):
@@ -66,9 +66,8 @@ class ClinicDentistsView(APIView):
     self.contract_repository = PGRepository(DentistClinicContract)
 
   def get(self, request, **kwargs):
-    print('Hello')
     with connection.cursor() as cursor:
-      cursor.execute(f'''select json_agg(contracts) from ({
+      cursor.execute(f'''select COALESCE(json_agg(contracts), '[]'::json)  from ({
         self.contract_repository
           .query('dcc')
           .where(f'dcc.clinic_id = {kwargs["clinic_id"]}')
@@ -79,6 +78,27 @@ class ClinicDentistsView(APIView):
             'dcc.date as contract_date',
             'd as dentist',
           )
+          .sql()
+      }) as contracts''')
+
+      return Response(
+        cursor.fetchone()[0], 
+        status=status.HTTP_200_OK
+      )
+
+class ClinicSuppliersView(APIView):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.contract_repository = PGRepository(SupplierClinicContract)
+
+  def get(self, request, **kwargs):
+    with connection.cursor() as cursor:
+      cursor.execute(f'''select COALESCE(json_agg(contracts), '[]'::json)  from ({
+        self.contract_repository
+          .query('scc')
+          .where(f'scc.clinic_id = {kwargs["clinic_id"]}')
+          .join(f'{Supplier._meta.__dict__["db_table"]} as s', 'scc.supplier_id = s.id', join_type='INNER')
+          .select('s.*')
           .sql()
       }) as contracts''')
 
