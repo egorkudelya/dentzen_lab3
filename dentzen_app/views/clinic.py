@@ -1,8 +1,10 @@
+from django.db import connection
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..models import DentalClinic
+from ..models import DentalClinic, DentistClinicContract
 from ..orm import PGRepository
 
 class ClinicShowView(APIView):
@@ -57,3 +59,30 @@ class ClinicIndexView(APIView):
         status=status.HTTP_400_BAD_REQUEST,
       )
     )
+
+class ClinicDentistsView(APIView):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.contract_repository = PGRepository(DentistClinicContract)
+
+  def get(self, request, **kwargs):
+    print('Hello')
+    with connection.cursor() as cursor:
+      cursor.execute(f'''select json_agg(contracts) from ({
+        self.contract_repository
+          .query('dcc')
+          .where(f'dcc.clinic_id = {kwargs["clinic_id"]}')
+          .join('dentists as d', 'dcc.dentist_id = d.id', join_type='INNER')
+          .select(
+            'dcc.id as contract_id',
+            'dcc.name as contract_name',
+            'dcc.date as contract_date',
+            'd as dentist',
+          )
+          .sql()
+      }) as contracts''')
+
+      return Response(
+        cursor.fetchone()[0], 
+        status=status.HTTP_200_OK
+      )
