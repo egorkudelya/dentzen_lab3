@@ -1,8 +1,10 @@
+from django.db import connection
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..models import Patient
+from ..models import Patient, Appointment
 from ..orm import PGRepository
 
 class PatientShowView(APIView):
@@ -50,3 +52,30 @@ class PatientIndexView(APIView):
       self.patient_repository.create(request.data),
       status=status.HTTP_201_CREATED,
     )
+
+class PatientAppointmentView(APIView):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.appointment_repository = PGRepository(Appointment)
+
+  def get(self, request, **kwargs):
+    with connection.cursor() as cursor:
+      cursor.execute(f'''select json_agg(appointments) from ({
+        self.appointment_repository
+          .query('a')
+          .where(f'a.patient_id = {kwargs["patient_id"]}')
+          .join('dentists as d', 'a.dentist_id = d.id', join_type='INNER')
+          .select(
+            'a.id as appointment_id',
+            'a.name as appointment_name',
+            'a.date_time as appointment_date_time',
+            'a.location as appointment_location',
+            'd as dentist',
+          )
+          .sql()
+      }) as appointments''')
+
+      return Response(
+        cursor.fetchone()[0],
+        status=status.HTTP_200_OK
+      )

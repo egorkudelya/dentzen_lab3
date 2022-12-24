@@ -1,3 +1,4 @@
+from .appointment import *
 from .clinic import *
 from .contract import *
 from .dentist import *
