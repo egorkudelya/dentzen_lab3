@@ -12,15 +12,28 @@ services:
       POSTGRES_PASSWORD: postgres
       PGPORT: "5432"
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - ./main/data/db:/var/lib/postgresql/data
     restart: always
     command: ["postgres", "-c", "log_statement=all"]
+
+  mongo_db:
+    container_name: dentzen_mongo_db
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: mongo
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    volumes:
+      - ./comments/data/mongodb/database:/data/db
+    restart: always
 
   app:
     build: .
     container_name: dentzen_app
     volumes:
-      - .:/code
+      - .:/code/
     ports:
       - "8000:8000"
     environment:
@@ -31,3 +44,17 @@ services:
       POSTGRES_HOSTNAME: postgres_db
     depends_on:
       - postgres_db
+
+  comments:
+    build: .
+    container_name: dentzen_comments
+    volumes:
+      - .:/code/
+    ports:
+      - "9000:9000"
+    environment:
+      MONGO_USERNAME: mongo
+      MONGO_PASSWORD: mongo
+      MONGO_PORT: 27017
+    depends_on:
+      - mongo_db

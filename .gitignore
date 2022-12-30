@@ -1,1 +1,3 @@
-/data/db
+/main/data/db
+/comments/data/
+/comments/data/mongodb/
