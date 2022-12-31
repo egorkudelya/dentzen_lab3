@@ -20,14 +20,14 @@ services:
     container_name: dentzen_mongo_db
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - 27017:27017
     environment:
-      MONGO_INITDB_DATABASE: mongo
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: comments
     volumes:
-      - ./comments/data/mongodb/database:/data/db
+      - ./comments/data/mongo:/data/db
     restart: always
+#    command:
+#      - su && mkdir /data/db/log && mongod --dbpath data/db --fork --logpath data/db/log && rm /data/db/mongod.lock && mongod
 
   app:
     build: .
