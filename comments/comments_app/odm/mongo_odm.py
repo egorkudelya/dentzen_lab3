@@ -36,7 +36,7 @@ class MongoODM:
         data = collection.find_one({parent_name: parent_id, '_id': ObjectId(comment_id)})
         if not data:
             return False
-        return json_util.dumps(data)
+        return json.loads(json_util.dumps(data))
 
     def update_one(self, collection_name, updated_data, comment_id):
 
