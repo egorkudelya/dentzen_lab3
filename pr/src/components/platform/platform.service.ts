@@ -53,7 +53,7 @@ export class PlatformService {
 
   async remove(id: number) {
     return this.neo4jService
-      .write('MATCH (p:Platform), (p)-[r]-() WHERE ID(p) = $id DELETE p, r', {
+      .write('MATCH (p:Platform) WHERE ID(p) = $id DETACH DELETE p', {
         id,
       })
       .then(extractIsUpdatedFromQueryRes)

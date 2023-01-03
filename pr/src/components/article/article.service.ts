@@ -85,7 +85,7 @@ export class ArticleService {
 
   async remove(id: number) {
     return this.neo4jService
-      .write('MATCH (a:Article), (a)-[r]-() WHERE ID(c) = $id DELETE a, r', {
+      .write('MATCH (a:Article) WHERE ID(c) = $id DETACH DELETE a', {
         id,
       })
       .then(extractIsUpdatedFromQueryRes)

@@ -53,7 +53,7 @@ export class ManagerService {
 
   remove(id: number) {
     return this.neo4jService
-      .write('MATCH (m:Manager), (c)-[r]-() WHERE ID(c) = $id DELETE m, r', {
+      .write('MATCH (m:Manager) WHERE ID(c) = $id DETACH DELETE m', {
         id,
       })
       .then(extractIsUpdatedFromQueryRes)

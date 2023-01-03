@@ -86,7 +86,7 @@ export class CustomerService {
 
   async remove(id: number) {
     return this.neo4jService
-      .write('MATCH (c:Customer), (c)-[r]-() WHERE ID(c) = $id DELETE c, r', {
+      .write('MATCH (c:Customer) WHERE ID(c) = $id DETACH DELETE c', {
         id,
       })
       .then(extractIsUpdatedFromQueryRes)
